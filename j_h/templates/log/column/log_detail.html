@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}log detail{% endblock %}
+
+{% block leftslider %}
+{% include 'leftslider.html' %}
+{% endblock %}
+
+{% block content %}
+<div>
+    <header>
+        <h1>{{ log.title }}</h1>
+        <p>
+            {{ log.author }}
+        </p>
+    </header>
+
+    <div id="editor-view">
+        <textarea id="append-test" style="display: none;">{{ log.body }}</textarea>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $(function () {
+        editormd.markdownToHTML("editor-view",{
+            htmlDecode:"style,script,iframe",
+            emoji:true,
+            taskList:true,
+            tex:true,   //默认不解析
+            flowChart:true, //默认不解析
+            sequenceDiagram:true,   //默认不解析
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% load thumbnail %}
+
+{% block title %}images{% endblock %}
+
+{% block leftslider %}
+    {% include 'leftslider.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-10">
+        <div>
+            <div style="margin-top: 10px">
+                <table class="table table-hover">
+                    <tr>
+                        <td>序号</td>
+                        <td>标题</td>
+                        <td>图片</td>
+                        <td>操作</td>
+                    </tr>
+                    {% for image in images %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ image.title }}</td>
+                            {% thumbnail image.image '100' as im %}
+                                <td><img src="{{ im.url }}"></td>
+                            {% endthumbnail %}
+                            <td>
+                                <a href="javascript:" name="edit" onclick="edit_image(this,{{ image.id }})">
+                                    <span class="fa fa-pencil"></span>
+                                </a>
+                                <a href="javascript:" name="delete" onclick="del_image(this,{{ image.id }})">
+                                    <span class="fa fa-trash" style="margin-left: 20px"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <p>还没有图片，请点击按钮添加图片</p>
+                    {% endfor %}
+                </table>
+            </div>
+            <hr>
+            <button type="button" class="btn btn-primary" onclick="addImage()">
+                添加图片
+            </button>
+            <hr style="margin-bottom: 0px">
+            {% include "paginator.html" %}
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script type="text/javascript">
+        function addImage() {
+            layer.open({
+                title: "上传图片",
+                area: ['500px', '300px'],
+                type: 1,
+                content: '<div style="padding: 20px">\
+                            <p>请添加扩展名为.jpg或.png的照片\
+                            <form class="form-group" id="fm" enctype="multipart/form-data">\
+                                <div class="form-group">\
+                                    <label for="phototitle" class="col-sm-2 control-label">标题</label>\
+                                    <div class="col-sm-10">\
+                                        <input type="text" name="title" id="phototitle" class="form-control" style="margin-bottom: 5px">\
+                                    </div>\
+                                </div>\
+                                <div class="form-group">\
+                                    <label for="photodescription" class="col-sm-2 control-label">描述</label>\
+                                    <div class="col-sm-10">\
+                                        <textarea class="form-control" name="description" id="photodescription" style="margin-bottom: 5px" row="2"></textarea>\
+                                    </div>\
+                                </div>\
+                                <div class="text-left">\
+                                   <input type="file" name="im" style="display: inline-block">\
+                                   <div id="er" style="display:inline-block;width: 200px;height: 34px">\
+                                   </div>\
+                                </div>\
+                            </form>\
+                        </div>',
+                btn: ['确定', '取消'],
+                yes: function () {
+                    $.ajax({
+                        url: '{% url "image:upload_image" %}',
+                        type: 'POST',
+                        data: new FormData($("#fm")[0]),//序列化表单值
+                        async: false,
+                        contentType: false,//必须有
+                        processData: false,//必须有
+                        success: function (e) {
+                            if (e == '1') {
+                                $('#er').text('Please keep filesize under 3 M');
+                            } else if (e == '2') {
+                                window.location.reload();
+                            } else if (e == '3') {
+                                $('#er').text('File type is not supported');
+                            } else {
+                                $('#er').text('File can not be null');
+                            }
+                        }
+                    })
+                },
+            });
+        }
+
+        function edit_image(the, image_id) {
+            layer.open({
+                title: "编辑图片",
+                area: ['650px', '600px'],
+                type: 2,
+                content: "{% url 'image:edit_image' %}",
+            });
+        }
+
+        function del_image(the, image_id) {
+            var image_title = $(the).parents('tr').children('td').eq(1).text();
+            layer.open({
+                type: 1,
+                skin: 'layui-layer-rim',
+                area: ['400px', '200px'],
+                title: '删除图片',
+                content: '<div class="text-center" style="margin-top: 20px"><p>是否删除《' + image_title + '》</p></div>',
+                btn: ['确定', '取消'],
+                yes: function () {
+                    $.ajax({
+                        url: '{% url "image:del_image" %}',
+                        type: 'POST',
+                        data: {'image_id': image_id},
+                        success: function (e) {
+                            var status = e['status'];
+                            if (status == '1') {
+                                parent.location.reload();
+                                layer.msg('删除成功');
+                            } else {
+                                layer.msg('删除失败');
+                            }
+                        },
+                    })
+                },
+            });
+        }
+    </script>
+{% endblock %}
+<!--
+<div style="padding: 20px">
+    <p>请新增扩展名为.jpg或.png的网上照片地址description
+    <form class="form-group">
+        <div class="form-group">
+            <label for="phototitle" class="col-sm-2 control-label">标题</label>
+            <div class="col-sm-10">
+                <input type="text" id="phototitle" class="form-control" style="margin-bottom: 5px">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="photourl" class="col-sm-2 control-label">地址</label>
+            <div class="col-sm-10">
+                <input type="text" id="photourl" class="form-control" style="margin-bottom: 5px">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="photodescription" class="col-sm-2 control-label">描述</label>
+            <div class="col-sm-10">
+                <textarea class="form-control" id="photodescription" style="margin-bottom: 5px" row="2"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="button" id="newphoto" class="btn btn-default" value="添加">
+            </div>
+        </div>
+    </form>
+</div>
+
+-->
+
+

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}log tag{% endblock %}
+
+{% block leftslider %}
+{% include 'leftslider.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="col-md-10">
+    <p><h4>添加日志标签</h4></p>
+    <form action="." class="form-horizontal" method="post">
+    {% csrf_token %}
+        <div class="row" style="margin-top: 10px;">
+            <div class="col-md-2 text-right"><span>日志标签</span></div>
+            <div class="col-md-2 text-left"><span>{{ log_tag_form.tag }}</span></div>
+        </div>
+        <div class="row">
+            <input type="button" class="btn btn-primary"
+                   style="margin-bottom:10px;margin-top: -30px;margin-left: -180px;"
+                   value="添加" onclick="add_tag()">
+        </div>
+    </form>
+</div>
+<div class="col-md-10">
+    <p>已有标签列表</p>
+    <table class="table table-hover">
+        <tr>
+            <td>序号</td>
+            <td>日志标签</td>
+            <td>操作</td>
+        </tr>
+        {% for log_tag in log_tags %}
+        <tr id="{{ forloop.counter }}">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ log_tag.tag }}</td>
+            <td>
+                <a href="javascript:" name="delete" onclick="del_tag(this,{{ log_tag.id }})">
+                    <span class="fa fa-trash"></span>
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <p>You have no log tags,Please add them.</p>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    function add_tag() {
+        tag=$('#id_tag').val();
+        $.ajax({
+            url:'{% url "log:log_tag" %}',
+            type:'POST',
+            data:{'tag':tag},
+            success:function (e) {
+                if(e=='1'){
+                    layer.msg('You have added a new tag.');
+                    window.location.reload();
+                }
+                else {
+                    layer.msg(e)
+                }
+            },
+        });
+    }
+
+    function del_tag(the,tag_id) {
+        var log_tag=$(the).parents('tr').children('td').eq(1).text();
+        layer.open({
+            type:1,
+            skin:'layui-layer-rim',
+            area:['400px','200px'],
+            title:'删除日志标签',
+            content:'<div class="text-center" style="margin-top: 20px;"><p>是否确定删除日志标签《'+log_tag+'》</p></div>',
+            btn:['确定','取消'],
+            yes:function () {
+                $.ajax({
+                    url:'{% url "log:del_log_tag" %}',
+                    type:'POST',
+                    data:{'tag_id':tag_id},
+                    success:function (e) {
+                        if(e=='1'){
+                            parent.location.reload();
+                            layer.msg('The tag has been deleted.');
+                        }else {
+                            layer.msg('删除失败');
+                        }
+                    },
+                });
+            }
+        });
+    }
+</script>
+{% endblock %}

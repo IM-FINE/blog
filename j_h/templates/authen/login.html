@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="container" style="width: 500px;margin-left: 1000px">
+        <div>
+            <form action="{% url 'authen:user_login' %}" method="POST">
+               {% csrf_token %}
+               <div class="col-md-2 text-left">
+                   <span>{{ form.as_p }}</span>
+                   <span><input type="submit" value="登录"></span>
+
+               </div>
+            </form>
+            <div class="col-md-12" style="margin-top: 10px">
+                <p>忘记密码？ <a href="#"> 重置密码</a></p>
+                <p>如果没有用户名,请<a href="#"> 注册</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

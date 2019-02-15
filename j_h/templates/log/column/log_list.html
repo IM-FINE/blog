@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}logs list{% endblock %}
+
+{% block leftslider %}
+{% include 'leftslider.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="col-md-10">
+    <table class="table table-hover">
+        <tr>
+            <td>序号</td>
+            <td>标题</td>
+            <td>操作</td>
+        </tr>
+        {% for log in logs %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><a href="{{ log.get_absolute_url }}">{{ log.title }}</a></td>
+            <td>
+                <a name="edit" href="{% url 'log:redit_log' log.id %}" onclick="edit_log(this,{{ log.id }})"><span class="fa fa-pencil fa-fw"></span></a>
+                <a name="delete" href="javascript:" onclick="del_log(this,{{ log.id }})"><span class="fa fa-trash-o fa-lg" style="margin-left: 20px"></span></a>
+            </td>
+        </tr>
+        {% empty %}
+        <p>还没有日志，太懒了</p>
+        {% endfor %}
+    </table>
+    {% include "paginator.html" %}
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    function del_log(the,log_id) {
+        var log_name=$(the).parents("tr").children("td").eq(1).text();
+        var index=layer.open({
+            type:1,
+            skin:"layui-layer-rim",
+            area:["400px","200px"],
+            title:"删除日志",
+            content:'<div class="text-center" style="margin-top:20px "><p>是否确定删除《'+log_name+'》</p></div>',
+            btn:['确定','取消'],
+            yes:function () {
+                $.ajax({
+                    url:'{% url "log:del_log" %}',
+                    type:'POST',
+                    data:{"log_id":log_id},
+                    success:function (e) {
+                        if(e=="1"){
+                            parent.location.reload();
+                            layer.msg("has been deleted.");
+                        }else {
+                            layer.msg("删除失败");
+                        }
+                    },
+                })
+            },
+            //取消按钮
+            btn2:function (index,layero) {
+                layer.close(index);
+            },
+        });
+    }
+</script>
+{% endblock %}

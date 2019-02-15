@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% load log_tags %}
+
+{% load staticfiles %}
+
+{% block title %}logs{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h3>这里一共有{% total_logs %}篇日志:</h3>
+</div>
+<div class="container">
+    {% for log in logs %}
+    <div class="list-group">
+        <a href="{{ log.get_url_path }}" class="list-group-item active">
+            <h4 class="list-group-item-heading">{{ log.title }}</h4>
+        </a>
+        <p class="list-group-item-text">作者：
+            <a href="{% url 'log:author_logs' log.author.username %}">
+                {{ log.author.username }} <!-- User类 -->
+            </a>
+        </p>
+        <!-- slice截取字符，truncatewords截取单词，按照空格来分  -->
+        <!-- linebreaks允许原文中的换行HTML标记符继续产生效用  -->
+        <p class="list-group-item-text">概要：{{ log.body | slice:'70' | linebreaks }}</p>
+    </div>
+    {% endfor %}
+{% include "paginator.html" %}
+</div>
+{% endblock %}

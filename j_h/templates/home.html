@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Home page{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>欢迎来到召唤师峡谷</h1>
+    <h3>人生苦短，我用python</h3>
+    <h2>Django</h2>
+</div>
+<div class="slider container">
+  <div><img src="{% static 'images/zhigao.jpg' %}" width="1000px" height="200px"></div>
+  <div><img src="{% static 'images/yasuo.jpeg' %}" width="1000px" height="200px"></div>
+  <div><img src="{% static 'images/xiaoyuren.jpeg' %}" width="1000px" height="200px"></div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  $(document).ready(function(){
+    $('.slider').bxSlider();
+  });
+</script>
+{% endblock %}

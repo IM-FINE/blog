@@ -1,0 +1,39 @@
+.myfooter{
+    position: relative;
+    height: 80px;
+    line-height: 70px;
+    margin-top: 0px;
+    background: #333;
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+}
+.navbar-default .navbar-nav>li>a{
+    color: #fff;
+}
+
+.navbar-default .navbar-nav>li>a:focus,.navbar-default .navbar-nav>li>a:hover{
+    color: #c0a16b;
+    background-color: transparent;
+}
+
+.bx-wrapper {
+    position: relative;
+    margin-bottom: 60px;
+    padding: 0;
+    *zoom: 1;
+    -ms-touch-action: pan-y;
+    touch-action: pan-y;
+    margin-right: 200px;
+    margin-left: 200px;
+}
+
+.navbar-default .btn-link {
+    color: #fff;
+    margin-top:-3px;
+}
+
+.navbar-default .btn-link:focus, .navbar-default .btn-link:hover {
+     color: #c0a16b;
+}
+

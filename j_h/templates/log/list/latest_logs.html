@@ -1,0 +1,7 @@
+<ul>
+    {% for log in latest_logs %}
+    <li>
+        <a href="{{ log.get_url_path }}">{{ log.title }}</a>
+    </li>
+    {% endfor %}
+</ul>

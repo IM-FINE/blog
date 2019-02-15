@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}my information{% endblock %}
+
+{% block leftslider %}
+{% include 'leftslider.html' %}
+{% endblock %}
+
+{% block content %}
+<div style="margin-left: 300px">
+<div class="row text-center vertical-middle-sm">
+    <div class="row">
+        <div class="col-md-6">
+           {% for info in info_list %}
+           <div class="row" style="margin-bottom: 10px">
+           {% for k,v in info.items %}
+               <div class="col-md-4 text-right"><span>{{ k }}</span></div>
+               <div class="col-md-8 text-left"><span>{{ v }}</span></div>
+           {% endfor %}
+           </div>
+           {% endfor %}
+           <div class="row">
+               <div class="col-md-4 text-right">
+                   <a href="{% url 'authen:edit_info' %}">
+                       <button class="btn btn-primary">
+                           编辑我的信息
+                       </button>
+                   </a>
+               </div>
+           </div>
+        </div>
+        <div class="col-md-6">
+            {% load staticfiles %}
+            <div style="margin-right: 500px">
+                {% if userinfo.portrait %}
+                <img src="{{ MEDIA_URL }}{{ userinfo.portrait }}" name="user_face" class="img-circle" width="200px" height="160px" id="my_photo" style=" margin-bottom: 10px">
+                {% else %}
+                <img src="{% static 'images/touxiang.jpg' %}" name="user_face" class="img-circle" width="200px" height="180px" id="my_photo" style=" margin-bottom: 10px">
+                {% endif %}
+                <div style="margin-left: 50px">
+                    <form id="fm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                        <input type="file" name="portrait" style="margin-bottom: 10px">
+                        <input style="display:inline-block;" type="button" value="上传头像" class="btn btn-primary" onclick="upload_portrait()">
+                        <div id="er" style="display:inline-block;width: 200px;height: 34px">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+    function upload_portrait() {
+        $.ajax({
+            url:'{% url "authen:user_info" %}',
+            type:'POST',
+            data:new FormData($("#fm")[0]),//序列化表单值
+            async:false,
+            contentType:false,//必须有
+            processData:false,//必须有
+            success:function (e) {
+                if(e=='1'){
+                    $('#er').text('Please keep filesize under 1 M');
+                }else if(e=='2'){
+                    window.location.reload();
+                }else if(e=='3'){
+                    $('#er').text('File type is not supported');
+                }else {
+                    $('#er').text('File can not be null');
+                }
+            }
+        })
+    }
+</script>
+{% endblock %}
